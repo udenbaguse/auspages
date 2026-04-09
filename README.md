@@ -65,6 +65,17 @@ The CLI replaces only the content between those markers.
 }
 ```
 
+## Add Vite Build
+ ``` vite.config.js
+ build: {
+    rollupOptions: {
+      input: {
+
+      },
+    },
+  },
+  ```
+
 ## Programmatic API
 
 ```js
@@ -75,3 +86,9 @@ await generatePages({
   updateVite: true,
 });
 ```
+
+
+
+## Changelog
+
+- See `CHANGELOG.md` for release notes.

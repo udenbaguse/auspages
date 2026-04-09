@@ -15,6 +15,11 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (arg === '--force-html') {
+      options.forceHtml = true;
+      continue;
+    }
+
     if (arg === '--no-vite') {
       options.updateVite = false;
       continue;
@@ -80,6 +85,7 @@ Usage:
 
 Options:
   --force              Overwrite generated entry/component files if they already exist
+  --force-html         Overwrite HTML files with boilerplate (default: only empty HTML files)
   --no-vite            Skip updating vite.config.js input block
   --root-only          Use root HTML files only for Vite input (no recursive scan)
   --root <path>        Project root (default: current directory)

@@ -86,3 +86,9 @@ await generatePages({
   updateVite: true,
 });
 ```
+
+
+
+## Changelog
+
+- See `CHANGELOG.md` for release notes.

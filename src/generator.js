@@ -44,6 +44,22 @@ function componentTemplate(componentName) {
 `;
 }
 
+function htmlTemplate(pageName) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${pageName}</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="./src/entry/${pageName}.js"></script>
+</body>
+</html>
+`;
+}
+
 async function listHtmlFilesRecursively(rootDir, dir, ignoreDirs) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
   const htmlFiles = [];
@@ -103,6 +119,16 @@ async function writeIfNeeded(filePath, content, forceWrite) {
   return 'skipped';
 }
 
+async function writeHtmlBoilerplateIfNeeded(htmlPath, pageName, forceHtml) {
+  const existingContent = await fs.readFile(htmlPath, 'utf8');
+  if (existingContent.trim().length > 0 && !forceHtml) {
+    return 'skipped';
+  }
+
+  await fs.writeFile(htmlPath, htmlTemplate(pageName), 'utf8');
+  return existingContent.trim().length > 0 ? 'overwritten' : 'templated';
+}
+
 async function updateViteInput({ rootDir, viteConfigPath, htmlFiles }) {
   const viteContent = await fs.readFile(viteConfigPath, 'utf8');
   const escapedStart = INPUT_START_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -133,6 +159,7 @@ export async function generatePages(userOptions = {}) {
   const viteConfigPath = path.join(rootDir, userOptions.viteConfig ?? 'vite.config.js');
   const forceWrite = Boolean(userOptions.force);
   const updateVite = userOptions.updateVite !== false;
+  const forceHtml = userOptions.forceHtml === true;
   const includeNestedHtml = userOptions.includeNestedHtml !== false;
   const ignoreDirs = new Set(userOptions.ignoreDirs ?? ['.git', 'node_modules', 'dist']);
   const appCssImportPath = userOptions.appCssImportPath ?? '../app.css';
@@ -149,8 +176,16 @@ export async function generatePages(userOptions = {}) {
   for (const htmlFile of rootHtmlFiles) {
     const baseName = path.parse(htmlFile).name;
     const componentName = toPascalCase(baseName);
+    const htmlPath = path.join(rootDir, htmlFile);
     const entryPath = path.join(entryDir, `${baseName}.js`);
     const componentPath = path.join(componentDir, `${componentName}.svelte`);
+
+    const htmlResult = await writeHtmlBoilerplateIfNeeded(
+      htmlPath,
+      baseName,
+      forceHtml,
+    );
+    logs.push(`${htmlResult.toUpperCase()} ${path.relative(rootDir, htmlPath)}`);
 
     const entryResult = await writeIfNeeded(
       entryPath,

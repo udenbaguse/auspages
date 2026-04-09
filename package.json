@@ -1,5 +1,5 @@
 {
-  "name": "auto-svelte-pages",
+  "name": "auspages",
   "version": "1.1.0",
   "description": "Generate Svelte entry/component files from HTML pages and sync Vite multi-page inputs.",
   "type": "module",

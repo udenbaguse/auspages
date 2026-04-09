@@ -37,7 +37,8 @@ In `vite.config.js`, add this marker block inside `build.rollupOptions.input`:
  build: {
     rollupOptions: {
       input: {
-
+  // AUTO-GENERATED VITE INPUT START
+  // AUTO-GENERATED VITE INPUT END
       },
     },
   },

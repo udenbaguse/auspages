@@ -24,10 +24,15 @@ function toViteInputKey(relativeHtmlPath) {
   return segments.join("_").toLowerCase();
 }
 
-function entryTemplate(componentName, appCssImportPath) {
+function toImportPath(fromDir, toFile) {
+  const relativePath = normalizePath(path.relative(fromDir, toFile));
+  return relativePath.startsWith(".") ? relativePath : `./${relativePath}`;
+}
+
+function entryTemplate(componentName, appCssImportPath, componentImportPath) {
   return `import { mount } from 'svelte'
 import '${appCssImportPath}'
-import App from '../component/${componentName}.svelte'
+import App from '${componentImportPath}'
 
 const app = mount(App, {
   target: document.getElementById('app'),
@@ -46,7 +51,10 @@ function componentTemplate(componentName) {
 `;
 }
 
-function htmlTemplate(pageName) {
+function htmlTemplate(pageName, entryDirName) {
+  const entrySrc = normalizePath(
+    path.join("src", entryDirName, `${pageName}.js`),
+  );
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -56,7 +64,7 @@ function htmlTemplate(pageName) {
 </head>
 <body>
   <div id="app"></div>
-  <script type="module" src="./src/entry/${pageName}.js"></script>
+  <script type="module" src="./${entrySrc}"></script>
 </body>
 </html>
 `;
@@ -215,13 +223,13 @@ async function writeIfNeeded(filePath, content) {
   return "skipped";
 }
 
-async function writeHtmlBoilerplateIfNeeded(htmlPath, pageName) {
+async function writeHtmlBoilerplateIfNeeded(htmlPath, pageName, entryDirName) {
   const existingContent = await fs.readFile(htmlPath, "utf8");
   if (existingContent.trim().length > 0) {
     return "skipped";
   }
 
-  await fs.writeFile(htmlPath, htmlTemplate(pageName), "utf8");
+  await fs.writeFile(htmlPath, htmlTemplate(pageName, entryDirName), "utf8");
   return "templated";
 }
 
@@ -294,18 +302,21 @@ export async function generatePages(userOptions = {}) {
     userOptions.srcDir,
     loadedConfig.srcDir,
     loadedConfig.dirs?.src,
+    loadedConfig.dir?.src,
     "src",
   );
   const entryDirName = resolveConfigValue(
     userOptions.entryDir,
     loadedConfig.entryDir,
     loadedConfig.dirs?.entry,
+    loadedConfig.dir?.entry,
     "entry",
   );
   const componentDirName = resolveConfigValue(
     userOptions.componentDir,
     loadedConfig.componentDir,
     loadedConfig.dirs?.component,
+    loadedConfig.dir?.component,
     "component",
   );
   const viteConfigFile = resolveConfigValue(
@@ -349,12 +360,14 @@ export async function generatePages(userOptions = {}) {
       userOptions.inputStartMarker,
       loadedConfig.inputStartMarker,
       loadedConfig.markers?.start,
+      loadedConfig.marker?.start,
       DEFAULT_INPUT_START_MARKER,
     ),
     end: resolveConfigValue(
       userOptions.inputEndMarker,
       loadedConfig.inputEndMarker,
       loadedConfig.markers?.end,
+      loadedConfig.marker?.end,
       DEFAULT_INPUT_END_MARKER,
     ),
   };
@@ -382,15 +395,20 @@ export async function generatePages(userOptions = {}) {
     const htmlPath = path.join(rootDir, htmlFile);
     const entryPath = path.join(entryDir, `${baseName}.js`);
     const componentPath = path.join(componentDir, `${componentName}.svelte`);
+    const componentImportPath = toImportPath(entryDir, componentPath);
 
-    const htmlResult = await writeHtmlBoilerplateIfNeeded(htmlPath, baseName);
+    const htmlResult = await writeHtmlBoilerplateIfNeeded(
+      htmlPath,
+      baseName,
+      entryDirName,
+    );
     logs.push(
       `${htmlResult.toUpperCase()} ${path.relative(rootDir, htmlPath)}`,
     );
 
     const entryResult = await writeIfNeeded(
       entryPath,
-      entryTemplate(componentName, appCssImportPath),
+      entryTemplate(componentName, appCssImportPath, componentImportPath),
     );
     logs.push(
       `${entryResult.toUpperCase()} ${path.relative(rootDir, entryPath)}`,

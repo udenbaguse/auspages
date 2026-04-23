@@ -7,29 +7,15 @@ Generate Svelte `entry` + `component` files from root HTML pages and auto-sync V
 -create, rename, delete, and generate Svelte `entry` + `component` files from root HTML pages.
 -auto-sync Vite multi-page `rollupOptions.input` with root HTML pages.
 
-## First-time setup:
-
-```bash
-npx auto-svelte-pages init
-```
-
 ## Installation
 
 ```bash
 npm i -D auto-svelte-pages
 ```
-
-## CLI Options
-
-- `--no-vite` skip updating `vite.config.js`
-- `--root-only` only use root HTML files for Vite input (no recursive scan)
-- `--root <path>` project root (default: current directory)
-- `--src-dir <dir>` source directory under root (default: `src`)
-- `--entry-dir <dir>` entry directory under src (default: `entry`)
-- `--component-dir <dir>` component directory under src (default: `component`)
-- `--vite-config <file>` Vite config path from root (default: `vite.config.js`)
-- `--css-import <path>` CSS import path for generated entry files (default: `../app.css`)
-
+### Initialize script setup:
+```bash
+npm run init:auto-svelte-pages
+```
 
 ## Use CLI
 
@@ -73,6 +59,18 @@ npm run generate:watch
 ```bash
 npm run help:auto-svelte-pages
 ```
+
+## CLI Options
+
+- `--no-vite` skip updating `vite.config.js`
+- `--root-only` only use root HTML files for Vite input (no recursive scan)
+- `--root <path>` project root (default: current directory)
+- `--src-dir <dir>` source directory under root (default: `src`)
+- `--entry-dir <dir>` entry directory under src (default: `entry`)
+- `--component-dir <dir>` component directory under src (default: `component`)
+- `--vite-config <file>` Vite config path from root (default: `vite.config.js`)
+- `--css-import <path>` CSS import path for generated entry files (default: `../app.css`)
+
 
 ## Programmatic API
 

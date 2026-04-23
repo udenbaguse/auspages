@@ -160,10 +160,13 @@ export async function runInit(userOptions = {}) {
   const pkg = await readJson(packageJsonPath);
   pkg.scripts = pkg.scripts ?? {};
   const desiredScripts = {
+    "init:auto-svelte-pages": "auto-svelte-pages init",
     "generate:all": "auto-svelte-pages",
     "generate:": "auto-svelte-pages",
     "generate:watch": "auto-svelte-pages --watch",
     "create:": "auto-svelte-pages create",
+    "rename:": "auto-svelte-pages rename",
+    "delete:": "auto-svelte-pages delete",
     "help:auto-svelte-pages": "auto-svelte-pages help",
   };
 

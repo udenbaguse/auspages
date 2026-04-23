@@ -93,11 +93,7 @@ function printHelp() {
   console.log(`auto-svelte-pages
 
 Usage:
-  auto-svelte-pages help
-  auto-svelte-pages create <name1> [name2 ...] [--no-vite]
-  auto-svelte-pages rename <old> to <new>
-  auto-svelte-pages delete <name1> [name2 ...]
-  auto-svelte-pages [options] [file1 file2 ...]
+  npm run <keywoard> <options>
 
 Options:
   --no-vite            Skip updating vite.config.js input block
@@ -113,9 +109,9 @@ Options:
   --help, -h           Show help
 
 Examples:
-  npx auto-svelte-pages help
+  npm run init:auto-svelte-pages
   npm run generate:all
-  npm run generate: -- index
+  npm run generate: -- index --no-vite
   npm run generate: -- header main
   npm run generate:watch
   npm run create: -- header
